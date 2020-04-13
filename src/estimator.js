@@ -1,12 +1,8 @@
 const covid19ImpactEstimator = (data) => {
   const {
-     ,
     periodType,
     timeToElapse,
-    reportedCases,
-     ,
-     
-  } = data;
+    reportedCases  } = data;
   const impactCurrentlyInfected = reportedCases * 10;
   const severeImpactCurrentlyInfected = reportedCases * 50;
 
