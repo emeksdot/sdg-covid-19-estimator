@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
+    "fix-js": "eslint-auto-fix",
     "lint": "eslint ./src/"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "@babel/preset-env": "^7.9.0",
     "babel-jest": "^25.2.0",
     "eslint": "^6.8.0",
+    "eslint-auto-fix": "^1.0.1",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.2.0",
