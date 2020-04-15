@@ -1,7 +1,8 @@
 const covid19ImpactEstimator = (data) => {
   const {
-    periodType, timeToElapse, reportedCases, totalHospitalBeds
+    region, periodType, timeToElapse, reportedCases, totalHospitalBeds
   } = data;
+  const { avgDailyIncomeInUSD: InUSD, avgDailyIncomePopulation: incomePop } = region;
   const impactCurrentlyInfected = reportedCases * 10;
   const severeImpactCurrentlyInfected = reportedCases * 50;
 
@@ -35,12 +36,46 @@ const covid19ImpactEstimator = (data) => {
     return 'Invalid time period.';
   };
 
+  const impactDays = (period) => {
+    if (period === 'days') {
+      return timeToElapse;
+    }
+    if (period === 'weeks') {
+      return timeToElapse * 7;
+    }
+    if (period === 'months') {
+      return timeToElapse * 30;
+    }
+    return 'Invalid time period.';
+  };
+
+  const severeImpactDays = (period) => {
+    if (period === 'days') {
+      return timeToElapse;
+    }
+    if (period === 'weeks') {
+      return timeToElapse * 7;
+    }
+    if (period === 'months') {
+      return timeToElapse * 30;
+    }
+    return 'Invalid time period.';
+  };
+
+  // Calculations for Impact object
   const impact = {};
   impact.currentlyInfected = impactCurrentlyInfected;
   impact.infectionsByRequestedTime = impactEstimateOfInfected(periodType);
   const impEst = Math.round(0.15 * impact.infectionsByRequestedTime);
   impact.severeCasesByRequestedTime = impEst;
   impact.hospitalBedsByRequestedTime = Math.round(0.35 * totalHospitalBeds) - impEst;
+  const impICU = Math.round(0.05 * impact.infectionsByRequestedTime);
+  impact.casesForICUByRequestedTime = impICU;
+  const impForVentilator = Math.round(0.02 * impact.infectionsByRequestedTime);
+  impact.casesForVentilatorsByRequestedTime = impForVentilator;
+  const incomeAndEarnersImp = incomePop * InUSD * impactDays(periodType);
+  impact.dollarsInFlight = impact.infectionsByRequestedTime * incomeAndEarnersImp;
+  // Calculations for SevereImpact object
   const severeImpact = {};
   severeImpact.currentlyInfected = severeImpactCurrentlyInfected;
   severeImpact.infectionsByRequestedTime = severeEstimateOfInfected(periodType);
@@ -48,7 +83,14 @@ const covid19ImpactEstimator = (data) => {
   severeImpact.severeCasesByRequestedTime = sevEst;
   const rem = Math.round(0.35 * totalHospitalBeds);
   severeImpact.hospitalBedsByRequestedTime = rem - severeImpact.severeCasesByRequestedTime;
-
+  const sevICU = Math.round(0.05 * severeImpact.infectionsByRequestedTime);
+  severeImpact.casesForICUByRequestedTime = sevICU;
+  const sevForVentilator = Math.round(
+    0.02 * severeImpact.infectionsByRequestedTime
+  );
+  severeImpact.casesForVentilatorsByRequestedTime = sevForVentilator;
+  const incomeAndEarners = incomePop * InUSD * severeImpactDays(periodType);
+  severeImpact.dollarsInFlight = severeImpact.infectionsByRequestedTime * incomeAndEarners;
   return {
     data,
     impact,
