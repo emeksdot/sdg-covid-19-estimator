@@ -1,7 +1,9 @@
 const covid19ImpactEstimator = (data) => {
+  const { periodType, timeToElapse, reportedCases, totalHospitalBeds } = data;
   const {
-    periodType, timeToElapse, reportedCases, totalHospitalBeds
-  } = data;
+    avgDailyIncomeInUSD: inUSD,
+    avgDailyIncomePopulation: incomePop
+  } = region;
   const impactCurrentlyInfected = reportedCases * 10;
   const severeImpactCurrentlyInfected = reportedCases * 50;
 
@@ -35,19 +37,63 @@ const covid19ImpactEstimator = (data) => {
     return 'Invalid time period.';
   };
 
+  const financialPeriod = (period) => {
+    if (period === 'days') {
+      return timeToElapse;
+    }
+    if (period === 'weeks') {
+      return timeToElapse * 7;
+    }
+    if (period === 'months') {
+      return timeToElapse * 30;
+    }
+    return 'Invalid time period.';
+  };
+
+  // impact object
   const impact = {};
   impact.currentlyInfected = impactCurrentlyInfected;
   impact.infectionsByRequestedTime = impactEstimateOfInfected(periodType);
   const impEst = Math.round(0.15 * impact.infectionsByRequestedTime);
   impact.severeCasesByRequestedTime = impEst;
-  impact.hospitalBedsByRequestedTime = Math.round(0.35 * totalHospitalBeds) - impEst;
+  impact.hospitalBedsByRequestedTime =
+    Math.round(0.35 * totalHospitalBeds) - impEst;
+  // Challenge 3
+  const impactInf_5 = Math.round(0.05 * impact.infectionsByRequestedTime);
+  impact.casesForICUByRequestedTime = impactInf_5;
+  const impactInf_2 = Math.round(0.02 * impact.infectionsByRequestedTime);
+  impact.casesForVentilatorsByRequestedTime = impactInf_2;
+  // Financial cost of Impact
+  impact.dollarsInFlight =
+    impact.infectionsByRequestedTime *
+    incomePop *
+    inUSD *
+    financialPeriod(periodType).toFixed(2);
+
+  // severeImpact object.
   const severeImpact = {};
   severeImpact.currentlyInfected = severeImpactCurrentlyInfected;
   severeImpact.infectionsByRequestedTime = severeEstimateOfInfected(periodType);
   const sevEst = Math.round(0.15 * severeImpact.infectionsByRequestedTime);
   severeImpact.severeCasesByRequestedTime = sevEst;
   const rem = Math.round(0.35 * totalHospitalBeds);
-  severeImpact.hospitalBedsByRequestedTime = rem - severeImpact.severeCasesByRequestedTime;
+  severeImpact.hospitalBedsByRequestedTime =
+    rem - severeImpact.severeCasesByRequestedTime;
+  // Challenge 3
+  const severeImpactInf5 = Math.round(
+    0.05 * severeImpact.infectionsByRequestedTime
+  );
+  severeImpact.casesForICUByRequestedTime = severeImpactInf5;
+  const severeImpactInf_2 = Math.round(
+    0.02 * severeImpact.infectionsByRequestedTime
+  );
+  severeImpact.casesForVentilatorsByRequestedTime = severeImpactInf_2;
+  // Financial cost for severeImpact
+  severeImpact.dollarsInFlight =
+    severeImpact.infectionsByRequestedTime *
+    incomePop *
+    inUSD *
+    financialPeriod(periodType).toFixed(2);
 
   return {
     data,
