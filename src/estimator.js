@@ -1,5 +1,7 @@
 const covid19ImpactEstimator = (data) => {
-  const { periodType, timeToElapse, reportedCases, totalHospitalBeds } = data;
+  const {
+    region, periodType, timeToElapse, reportedCases, totalHospitalBeds
+  } = data;
   const {
     avgDailyIncomeInUSD: inUSD,
     avgDailyIncomePopulation: incomePop
@@ -56,19 +58,17 @@ const covid19ImpactEstimator = (data) => {
   impact.infectionsByRequestedTime = impactEstimateOfInfected(periodType);
   const impEst = Math.round(0.15 * impact.infectionsByRequestedTime);
   impact.severeCasesByRequestedTime = impEst;
-  impact.hospitalBedsByRequestedTime =
-    Math.round(0.35 * totalHospitalBeds) - impEst;
+  impact.hospitalBedsByRequestedTime = Math.round(0.35 * totalHospitalBeds) - impEst;
   // Challenge 3
-  const impactInf_5 = Math.round(0.05 * impact.infectionsByRequestedTime);
-  impact.casesForICUByRequestedTime = impactInf_5;
-  const impactInf_2 = Math.round(0.02 * impact.infectionsByRequestedTime);
-  impact.casesForVentilatorsByRequestedTime = impactInf_2;
+  const impactInf5 = Math.round(0.05 * impact.infectionsByRequestedTime);
+  impact.casesForICUByRequestedTime = impactInf5;
+  const impactInf2 = Math.round(0.02 * impact.infectionsByRequestedTime);
+  impact.casesForVentilatorsByRequestedTime = impactInf2;
   // Financial cost of Impact
-  impact.dollarsInFlight =
-    impact.infectionsByRequestedTime *
-    incomePop *
-    inUSD *
-    financialPeriod(periodType).toFixed(2);
+  impact.dollarsInFlight = impact.infectionsByRequestedTime
+    * incomePop
+    * inUSD
+    * financialPeriod(periodType).toFixed(2);
 
   // severeImpact object.
   const severeImpact = {};
@@ -77,23 +77,21 @@ const covid19ImpactEstimator = (data) => {
   const sevEst = Math.round(0.15 * severeImpact.infectionsByRequestedTime);
   severeImpact.severeCasesByRequestedTime = sevEst;
   const rem = Math.round(0.35 * totalHospitalBeds);
-  severeImpact.hospitalBedsByRequestedTime =
-    rem - severeImpact.severeCasesByRequestedTime;
+  severeImpact.hospitalBedsByRequestedTime = rem - severeImpact.severeCasesByRequestedTime;
   // Challenge 3
   const severeImpactInf5 = Math.round(
     0.05 * severeImpact.infectionsByRequestedTime
   );
   severeImpact.casesForICUByRequestedTime = severeImpactInf5;
-  const severeImpactInf_2 = Math.round(
+  const severeImpactInf2 = Math.round(
     0.02 * severeImpact.infectionsByRequestedTime
   );
-  severeImpact.casesForVentilatorsByRequestedTime = severeImpactInf_2;
+  severeImpact.casesForVentilatorsByRequestedTime = severeImpactInf2;
   // Financial cost for severeImpact
-  severeImpact.dollarsInFlight =
-    severeImpact.infectionsByRequestedTime *
-    incomePop *
-    inUSD *
-    financialPeriod(periodType).toFixed(2);
+  severeImpact.dollarsInFlight = severeImpact.infectionsByRequestedTime
+    * incomePop
+    * inUSD
+    * financialPeriod(periodType).toFixed(2);
 
   return {
     data,
