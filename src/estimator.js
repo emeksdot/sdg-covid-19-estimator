@@ -1,6 +1,10 @@
 const covid19ImpactEstimator = (data) => {
   const {
-    region, periodType, timeToElapse, reportedCases, totalHospitalBeds
+    region,
+    periodType,
+    timeToElapse,
+    reportedCases,
+    totalHospitalBeds
   } = data;
   const {
     avgDailyIncomeInUSD: inUSD,
@@ -59,7 +63,7 @@ const covid19ImpactEstimator = (data) => {
   // Challenge 2
   const impEst = Math.round(0.15 * impact.infectionsByRequestedTime);
   impact.severeCasesByRequestedTime = impEst;
-  impact.hospitalBedsByRequestedTime = (Math.round(0.35 * totalHospitalBeds) - impEst);
+  impact.hospitalBedsByRequestedTime = Math.round(0.35 * totalHospitalBeds) - impEst;
   // Challenge 3
   const impactInf5 = Math.round(0.05 * impact.infectionsByRequestedTime);
   impact.casesForICUByRequestedTime = impactInf5;
