@@ -56,9 +56,10 @@ const covid19ImpactEstimator = (data) => {
   const impact = {};
   impact.currentlyInfected = impactCurrentlyInfected;
   impact.infectionsByRequestedTime = impactEstimateOfInfected(periodType);
+  // Challenge 2
   const impEst = Math.round(0.15 * impact.infectionsByRequestedTime);
   impact.severeCasesByRequestedTime = impEst;
-  impact.hospitalBedsByRequestedTime = Math.round(0.35 * totalHospitalBeds) - impEst;
+  impact.hospitalBedsByRequestedTime = (Math.round(0.35 * totalHospitalBeds) - impEst);
   // Challenge 3
   const impactInf5 = Math.round(0.05 * impact.infectionsByRequestedTime);
   impact.casesForICUByRequestedTime = impactInf5;
